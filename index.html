@@ -11,8 +11,8 @@ Ontwerp, akkoord 17 nov 2026:
 - Grap op nep-kortingen, in Coolblue-kleuren op zwart. Echte prijs: repen Milka (update
   20 nov: er waren geen stroopwafels). Vier lila Milka-vakken met koeienvlekken, elke winst is 1 reep.
 - Verder: 1+1 gratis (nog een draai), gratis drankje (bier of wijn), gratis compliment
-  (complimentbon, inleveren aan de bar), de host jongleert met mandarijnen (kans ongeveer
-  1 op 700 per draai, hooguit 1 keer, uit te zetten) en vier nieten: prijsfout, uitverkocht,
+  (complimentbon, inleveren aan de bar), het vak Host jongleert (staat erop, maar het rad
+  stopt er nooit; besluit 20 nov) en vier nieten: prijsfout, uitverkocht,
   gratis verzending, no returns.
 - Beurt: naam + team -> teamanimatie -> spatie -> rad -> kassabon met eigen effect en geluid.
 - De voorraad stuurt de kans zo dat de repen precies op gaan, en er vallen nooit meer dan
@@ -20,7 +20,7 @@ Ontwerp, akkoord 17 nov 2026:
 - Alles wordt in de browser onthouden, ook na verversen. Werkt zonder internet
   (de lettertypen vallen dan terug op de letters van de laptop).
 Sneltoetsen: Enter nieuwe klant, spatie draaien, S instellingen, M geluid, F volledig scherm,
-Esc klant annuleren. Stiekem, vlak voor het draaien: J = Milka, O = optreden.
+Esc klant annuleren. Stiekem, vlak voor het draaien: J = Milka.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -372,9 +372,6 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
         <div class="stapper"><button data-veld="iVerwacht" data-d="-10">−</button><input id="iVerwacht" inputmode="numeric"><button data-veld="iVerwacht" data-d="10">+</button></div>
         <small>Hiermee verdeelt het rad de repen over de hele borrel. Liever een eerlijke schatting dan te hoog.</small>
       </div>
-      <div class="veld">Optreden van de host
-        <label class="schakel"><input type="checkbox" id="iOpt"><span>Mag op het rad vallen<br><small id="iOptTekst"></small></span></label>
-      </div>
     </div>
     <h3>Tijdens de borrel</h3>
     <div class="groep">
@@ -396,7 +393,7 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
     <h3>Sneltoetsen</h3>
     <div class="sneltoetsen">
       <div><kbd>Enter</kbd>nieuwe klant</div><div><kbd>Spatie</kbd>draaien of verder</div><div><kbd>Esc</kbd>klant annuleren</div><div><kbd>S</kbd>instellingen</div>
-      <div><kbd>M</kbd>geluid aan of uit</div><div><kbd>F</kbd>volledig scherm</div><div><kbd>J</kbd>stiekem: volgende draai Milka</div><div><kbd>O</kbd>stiekem: volgende draai optreden</div>
+      <div><kbd>M</kbd>geluid aan of uit</div><div><kbd>F</kbd>volledig scherm</div><div><kbd>J</kbd>stiekem: volgende draai Milka</div>
     </div>
     <div class="knoppen" style="margin:2.4vh 0 0;justify-content:flex-end"><button class="knopje hoofd" id="bSluit">Klaar</button></div>
   </div>
@@ -471,7 +468,7 @@ const SEG=[
  {k:'optreden',l:['HOST','JONGLEERT'],c:'#1C4684'},
  {k:'prijsfout',l:['PRIJSFOUT'],c:'#000'}
 ];
-/* basiskans per vak (Milka wordt apart berekend uit de voorraad); het optreden valt ongeveer 1 op de 700 draaien */
+/* basiskans per vak (Milka wordt apart berekend uit de voorraad); op Host jongleert stopt het rad nooit */
 const BASIS={drank:1.4,compliment:1.2,bonus:.7,optreden:.01,prijsfout:.55,uitverkocht:.55,verzending:.55,noreturns:.55};
 const NIETEN=['prijsfout','uitverkocht','verzending','noreturns'];
 const WINST=['milka','drank','compliment','optreden'];
@@ -563,7 +560,7 @@ const geluid=(()=>{
 
 /* ---------------- het rad ---------------- */
 const schijf=$('#schijf'), wijzer=$('#wijzer');
-const uitverkochtVak=s=>(s.k==='milka'&&st.S<=0)||(s.k==='optreden'&&(st.optGeweest||!st.optAan));
+const uitverkochtVak=s=>s.k==='milka'&&st.S<=0;
 function rondRect(x,a,b,w,h,r){ x.beginPath(); x.moveTo(a+r,b); x.arcTo(a+w,b,a+w,b+h,r); x.arcTo(a+w,b+h,a,b+h,r); x.arcTo(a,b+h,a,b,r); x.arcTo(a,b,a+w,b,r); x.closePath(); }
 function label(x,lijnen,r,font,kleur){
   const eind=r*.895, lengte=r*.52, twee=lijnen.length>1;
@@ -651,7 +648,7 @@ function gewichten(){
   const w=SEG.map(s=>{
     if(s.k==='milka') return 0;
     let x=BASIS[s.k];
-    if(s.k==='optreden'&&(!st.optAan||st.optGeweest)) x=0;
+    if(s.k==='optreden') x=0; /* Host jongleert staat erop, maar het rad stopt er nooit */
     if(NIETEN.includes(s.k)) x*=nietenOpRij?0:(st.allesWeg?.5:1);
     return x;
   });
@@ -859,19 +856,18 @@ function openInstellingen(welkom){
 }
 function vulInstellingen(){
   $('#iS').value=st.S; $('#iVerwacht').value=st.verwacht;
-  $('#iOpt').checked=st.optAan; $('#iAlles').checked=st.allesWeg; $('#iGeluid').checked=st.geluid;
-  $('#iOptTekst').textContent=(st.optGeweest?'Is al gebeurd, dus nu uitverkocht.':'Nog niet gebeurd.')+' Kans ongeveer 1 op 700 per draai, hooguit één keer.';
+  $('#iAlles').checked=st.allesWeg; $('#iGeluid').checked=st.geluid;
   if(!$('#pDraai').value) $('#pDraai').value=Math.ceil(st.verwacht/10)*10;
   if(!$('#pCompl').value) $('#pCompl').value=20;
 }
 function leesInstellingen(){
   const getal=(id,min)=>Math.max(min,parseInt($(id).value,10)||0);
   st.S=getal('#iS',0); st.verwacht=getal('#iVerwacht',1);
-  st.optAan=$('#iOpt').checked; st.allesWeg=$('#iAlles').checked; st.geluid=$('#iGeluid').checked;
+  st.allesWeg=$('#iAlles').checked; st.geluid=$('#iGeluid').checked;
   geluid.volume(st.geluid); bewaar(); tekenWiel(); ui();
 }
 const melding=t=>{ $('#melding').textContent=t; };
-$('#instellingen').addEventListener('input',e=>{ if(e.target.matches('#iS,#iVerwacht,#iOpt,#iAlles,#iGeluid')) leesInstellingen(); });
+$('#instellingen').addEventListener('input',e=>{ if(e.target.matches('#iS,#iVerwacht,#iAlles,#iGeluid')) leesInstellingen(); });
 $('#instellingen').addEventListener('click',e=>{ const s=e.target.closest('[data-veld]'); if(!s) return; const inp=$('#'+s.dataset.veld); inp.value=Math.max(0,(parseInt(inp.value,10)||0)+Number(s.dataset.d)); if(inp.id.startsWith('i')) leesInstellingen(); });
 $('#bSluit').addEventListener('click',()=>{ leesInstellingen(); geluid.start(); $('#instellingen').classList.remove('open'); if(!st.klaar){ st.klaar=true; bewaar(); } if(fase==='start') fase='rust'; wakker(); ui(); });
 $('#bTerug').addEventListener('click',()=>{ const b=st.beurten.pop(); if(!b){ melding('Er is nog geen beurt om terug te draaien.'); return; } if(b.k==='milka') st.S++; else if(b.k==='optreden') st.optGeweest=false; bewaar(); vulInstellingen(); tekenWiel(); ui(); melding(`Teruggedraaid: ${b.naam}, ${UIT[b.k].kop.toLowerCase()}`); });
@@ -916,7 +912,7 @@ addEventListener('keydown',e=>{
   if(k==='s'){ if(fase==='rust'||fase==='klaar') openInstellingen(false); return; }
   if(k==='m'){ st.geluid=!st.geluid; geluid.volume(st.geluid); bewaar(); return; }
   if(k==='f'){ volledigScherm(); return; }
-  if(fase==='klaar'&&(k==='j'||k==='o')){ gedwongen=k==='j'?'milka':'optreden'; $('#geheim').classList.add('aan'); }
+  if(fase==='klaar'&&k==='j'){ gedwongen='milka'; $('#geheim').classList.add('aan'); }
 });
 let rt=0; addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>{ tekenWiel(); maatFx(); },120); });
 
