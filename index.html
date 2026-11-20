@@ -11,12 +11,13 @@ Ontwerp, akkoord 17 nov 2026:
 - Grap op nep-kortingen, in Coolblue-kleuren op zwart. Echte prijs: repen Milka (update
   20 nov: er waren geen stroopwafels). Vier lila Milka-vakken met koeienvlekken, elke winst is 1 reep.
 - Verder: 1+1 gratis (nog een draai), gratis drankje (bier of wijn), gratis compliment
-  (complimentbon, inleveren aan de bar), het vak Host jongleert (staat erop, maar het rad
-  stopt er nooit; besluit 20 nov) en vier nieten: prijsfout, uitverkocht,
+  (complimentbon, inleveren aan de bar), de host jongleert (kleine kans, hooguit 1 keer)
+  en vier nieten: prijsfout, uitverkocht,
   gratis verzending, no returns.
 - Beurt: naam + team -> teamanimatie -> spatie -> rad -> kassabon met eigen effect en geluid.
-- De voorraad stuurt de kans zo dat de repen precies op gaan, en er vallen nooit meer dan
-  2 nieten op rij. Op = sticker UITVERKOCHT. Laatste kwartier: Alles moet weg.
+- De repen worden verdeeld over de duur (standaard 30 min, de klok start bij de eerste draai),
+  op basis van hoe snel er echt gedraaid wordt. Nooit meer dan 2 nieten op rij.
+  De laatste 5 minuten gaat Alles moet weg vanzelf aan. Op = sticker UITVERKOCHT.
 - Alles wordt in de browser onthouden, ook na verversen. Werkt zonder internet
   (de lettertypen vallen dan terug op de letters van de laptop).
 Sneltoetsen: Enter nieuwe klant, spatie draaien, S instellingen, M geluid, F volledig scherm,
@@ -343,7 +344,7 @@ body.draaimodus #wiel{transform:translate(21vw,-3vh) scale(var(--spinschaal,1.12
       <div id="voorraad"><i></i><span></span></div>
       <div id="klant"></div>
       <button id="knop"></button>
-      <div class="urgent"><span>Deze deal verloopt over <b id="aftel">9:59</b></span><span><b id="kijkers">27</b> collega's bekijken dit rad</span></div>
+      <div class="urgent"><span id="klok"></span><span><b id="kijkers">27</b> collega's bekijken dit rad</span></div>
     </div>
     <div class="blok" id="stand">
       <div class="kopje"><h2 class="kop">Teamstand</h2><span id="totaal"></span></div>
@@ -376,9 +377,9 @@ body.draaimodus #wiel{transform:translate(21vw,-3vh) scale(var(--spinschaal,1.12
         <div class="stapper"><button data-veld="iS" data-d="-1">−</button><input id="iS" inputmode="numeric"><button data-veld="iS" data-d="1">+</button></div>
         <small>Elke winst is één reep. Het rad verdeelt ze zo dat ze aan het eind op zijn.</small>
       </div>
-      <div class="veld">Verwacht aantal draaiers
-        <div class="stapper"><button data-veld="iVerwacht" data-d="-10">−</button><input id="iVerwacht" inputmode="numeric"><button data-veld="iVerwacht" data-d="10">+</button></div>
-        <small>Hiermee verdeelt het rad de repen over de hele borrel. Liever een eerlijke schatting dan te hoog.</small>
+      <div class="veld">Duur van het rad in minuten
+        <div class="stapper"><button data-veld="iDuur" data-d="-5">−</button><input id="iDuur" inputmode="numeric"><button data-veld="iDuur" data-d="5">+</button></div>
+        <small>De klok start bij de eerste draai. Het rad verdeelt de repen over deze tijd; de laatste 5 minuten gaat Alles moet weg vanzelf aan.</small>
       </div>
     </div>
     <h3>Tijdens de borrel</h3>
@@ -406,7 +407,7 @@ body.draaimodus #wiel{transform:translate(21vw,-3vh) scale(var(--spinschaal,1.12
       <div><kbd>Enter</kbd>nieuwe klant</div><div><kbd>Spatie</kbd>draaien of verder</div><div><kbd>Esc</kbd>klant annuleren</div><div><kbd>S</kbd>instellingen</div>
       <div><kbd>M</kbd>geluid aan of uit</div><div><kbd>F</kbd>volledig scherm</div><div><kbd>J</kbd>stiekem: volgende draai Milka</div>
     </div>
-    <div class="knoppen" style="margin:2.4vh 0 0;justify-content:flex-end"><span class="versie">Versie 5, 20 nov</span><button class="knopje hoofd" id="bSluit">Klaar</button></div>
+    <div class="knoppen" style="margin:2.4vh 0 0;justify-content:flex-end"><span class="versie">Versie 6, 20 nov</span><button class="knopje hoofd" id="bSluit">Klaar</button></div>
   </div>
 </div>
 
@@ -479,8 +480,8 @@ const SEG=[
  {k:'optreden',l:['HOST','JONGLEERT'],c:'#1C4684'},
  {k:'prijsfout',l:['PRIJSFOUT'],c:'#000'}
 ];
-/* basiskans per vak (Milka wordt apart berekend uit de voorraad); op Host jongleert stopt het rad nooit */
-const BASIS={drank:1.4,compliment:1.2,bonus:.7,optreden:.01,prijsfout:.55,uitverkocht:.55,verzending:.55,noreturns:.55};
+/* basiskans per vak (Milka wordt apart berekend uit de voorraad); jongleren is een kleine kans, hooguit één keer */
+const BASIS={drank:1.4,compliment:1.6,bonus:.7,optreden:.025,prijsfout:.55,uitverkocht:.55,verzending:.55,noreturns:.55};
 const NIETEN=['prijsfout','uitverkocht','verzending','noreturns'];
 const WINST=['milka','drank','compliment','optreden'];
 const WINNAAM={milka:'een reep Milka',drank:'een gratis drankje',compliment:'een compliment',optreden:'een optreden van de host'};
@@ -501,7 +502,7 @@ const COMPLIMENTEN=['Jij bent de enige deal hier zonder kleine lettertjes.','Jij
 
 /* ---------------- opslag ---------------- */
 const OPSLAG='dealrad-v2';
-const vers=()=>({S:0,verwacht:100,beurten:[],optAan:true,optGeweest:false,allesWeg:false,geluid:true,bon:0,klaar:false});
+const vers=()=>({S:0,duur:30,startTijd:null,beurten:[],optGeweest:false,allesWeg:false,geluid:true,bon:0,klaar:false});
 function laad(){ try{ const j=JSON.parse(localStorage.getItem(OPSLAG)||'null'); if(j&&Array.isArray(j.beurten)) return Object.assign(vers(),j); }catch(e){} return vers(); }
 function bewaar(){ try{ localStorage.setItem(OPSLAG,JSON.stringify(st)); }catch(e){} }
 let st=laad();
@@ -650,22 +651,24 @@ function lus(t){
   requestAnimationFrame(lus);
 }
 
-/* kansen: de repen worden verdeeld over de verwachte draaiers, zodat ze aan het eind op zijn.
+/* kansen: de repen worden verdeeld over de resterende tijd (geschat aantal beurten), zodat ze aan het eind op zijn.
    Hoe langer geen Milka, hoe groter de kans; na 2 nieten op rij valt er altijd iets. */
 function gewichten(){
-  const gedaan=st.beurten.filter(b=>!b.bonus).length, rest=Math.max(1,st.verwacht-gedaan);
+  const echte=st.beurten.filter(b=>!b.bonus).slice(-8);
+  const perBeurt=echte.length>=3?klem((echte[echte.length-1].t-echte[0].t)/(echte.length-1),12000,90000):25000;
+  const rest=Math.max(1,Math.round(restTijd()/perBeurt)), aw=allesWegNu();
   const laatste=st.beurten.slice(-2), nietenOpRij=laatste.length===2&&laatste.every(b=>NIETEN.includes(b.k));
   let droog=0; for(let i=st.beurten.length-1;i>=0&&st.beurten[i].k!=='milka';i--) droog++;
   const w=SEG.map(s=>{
     if(s.k==='milka') return 0;
     let x=BASIS[s.k];
-    if(s.k==='optreden') x=0; /* Host jongleert staat erop, maar het rad stopt er nooit */
-    if(NIETEN.includes(s.k)) x*=nietenOpRij?0:(st.allesWeg?.5:1);
+    if(s.k==='optreden'&&st.optGeweest) x=0; /* jongleren: kleine kans, hooguit één keer */
+    if(NIETEN.includes(s.k)) x*=nietenOpRij?0:(aw?.5:1);
     return x;
   });
   const vakken=SEG.filter(s=>s.k==='milka').length;
   if(st.S<=0) return SEG.map((s,i)=>s.k==='milka'?(nietenOpRij?0:.2):w[i]);
-  let p=st.allesWeg?.85:Math.min(.85,st.S/rest);
+  let p=aw?.85:Math.min(.85,st.S/rest);
   p=Math.min(.9,p*(1+.2*Math.max(0,droog-3)));
   const M=p*w.reduce((a,b)=>a+b,0)/(1-p);
   return SEG.map((s,i)=>s.k==='milka'?M/vakken:w[i]);
@@ -674,11 +677,13 @@ function kies(){ const w=gewichten(), tot=w.reduce((a,b)=>a+b,0); let r=Math.ran
 
 function draai(){
   if(fase!=='klaar') return;
-  geluid.start(); fase='draait'; ui();
+  geluid.start(); fase='draait';
+  if(!st.startTijd){ st.startTijd=Date.now(); bewaar(); }
+  ui();
   const doel=gedwongen?SEG.findIndex(s=>s.k===gedwongen):kies();
   gedwongen=null; $('#geheim').classList.remove('aan');
   const phi=(doel+.18+Math.random()*.64)*30, begin=hoek;
-  const delta=(((-phi-begin)%360)+360)%360+360*(6+Math.floor(Math.random()*2));
+  const delta=(((-phi-begin)%360)+360)%360+360*(5+Math.floor(Math.random()*2));
   const w=$('#wiel'); w.style.setProperty('--spinschaal',(Math.min(innerHeight*.92,innerWidth*.96)/w.offsetWidth).toFixed(3));
   document.body.classList.add('draaimodus');
   setTimeout(()=>{
@@ -686,7 +691,7 @@ function draai(){
     const start=hoek;
     zetAnim(260,p=>{ hoek=start-8*easeInUit(p); },()=>{
       const van=hoek, naar=begin+delta;
-      zetAnim(6300+Math.random()*900,p=>{ hoek=van+(naar-van)*easeUit(p); },()=>{ lampen('jaag'); setTimeout(()=>geland(doel),420); });
+      zetAnim(4800+Math.random()*800,p=>{ hoek=van+(naar-van)*easeUit(p); },()=>{ lampen('jaag'); setTimeout(()=>geland(doel),420); });
     });
   },450);
 }
@@ -829,7 +834,7 @@ function startBeurt(naam,teamId){
   geluid.zoef(); setTimeout(()=>geluid.tada(),320);
   if(t.geluid) setTimeout(()=>geluid[t.geluid](),450);
   if(t.id==='camera') setTimeout(()=>$('#flits').animate([{opacity:1},{opacity:0}],{duration:700,easing:'ease-out'}),420);
-  clearTimeout(introTimer); introTimer=setTimeout(naarKlaar,3100);
+  clearTimeout(introTimer); introTimer=setTimeout(naarKlaar,2300);
   ui();
 }
 function naarKlaar(){
@@ -850,7 +855,7 @@ function ui(){
   knop.disabled=!(fase==='rust'||fase==='klaar');
   knop.innerHTML=fase==='klaar'?(klant&&klant.bonus?'Draai je extra draai':'Draai aan het rad')+'<kbd>spatie</kbd>':fase==='draait'?'Het rad draait':fase==='intro'?'Bijna klaar':'Nieuwe klant<kbd>Enter</kbd>';
   $('#hint').classList.toggle('aan',fase==='klaar');
-  $('#allesweg').classList.toggle('aan',st.allesWeg);
+  klok();
   const tel={}; st.beurten.forEach(b=>{ const w=tel[b.team]||(tel[b.team]={k:0,d:0}); if(!b.bonus) w.k++; if(WINST.includes(b.k)) w.d++; });
   const lijst=Object.entries(tel).sort((a,b)=>b[1].k-a[1].k||b[1].d-a[1].d).slice(0,6), totaal=st.beurten.filter(b=>!b.bonus).length, max=lijst.length?lijst[0][1].k||1:1;
   $('#totaal').textContent=totaal?`${totaal} ${totaal===1?'klant':'klanten'} geholpen`:'';
@@ -858,8 +863,16 @@ function ui(){
   const l=[...st.beurten].reverse().find(b=>WINST.includes(b.k));
   $('#laatst').innerHTML=l?`Laatst gescoord: <b>${esc(l.naam)}</b> (${esc(l.team==='gast'?'gast':team(l.team).kort)}) won ${WINNAAM[l.k]}, ${geleden(l.t)}.`:'';
 }
-let aftel=599, kijkers=27;
-setInterval(()=>{ aftel=aftel>0?aftel-1:599; $('#aftel').textContent=Math.floor(aftel/60)+':'+String(aftel%60).padStart(2,'0');
+/* de klok: telt de duur af vanaf de eerste draai; de laatste 5 minuten gaat Alles moet weg vanzelf aan */
+function restTijd(){ const duurMs=(st.duur||30)*60000; return st.startTijd?Math.max(0,st.startTijd+duurMs-Date.now()):duurMs; }
+function allesWegNu(){ return st.allesWeg||(!!st.startTijd&&restTijd()<=5*60000); }
+function klok(){
+  const k=$('#klok'); if(!k) return; const r=restTijd(), s=Math.ceil(r/1000);
+  k.innerHTML=!st.startTijd?`De klok (${st.duur||30} min) start bij de eerste draai`:r>0?`Nog <b>${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}</b> om te draaien`:'<b>De tijd is om.</b> Wat er nog is, moet weg!';
+  $('#allesweg').classList.toggle('aan',allesWegNu());
+}
+let kijkers=27;
+setInterval(()=>{ klok();
   if(Math.random()<.3){ kijkers=klem(kijkers+Math.round((Math.random()-.45)*4),14,46); $('#kijkers').textContent=kijkers; } },1000);
 setInterval(()=>{ if(fase==='rust') ui(); },30000);
 
@@ -872,19 +885,19 @@ function openInstellingen(welkom){
   $('#instellingen').classList.add('open');
 }
 function vulInstellingen(){
-  $('#iS').value=st.S; $('#iVerwacht').value=st.verwacht;
+  $('#iS').value=st.S; $('#iDuur').value=st.duur||30;
   $('#iAlles').checked=st.allesWeg; $('#iGeluid').checked=st.geluid;
-  if(!$('#pDraai').value) $('#pDraai').value=Math.ceil(st.verwacht/10)*10;
-  if(!$('#pCompl').value) $('#pCompl').value=20;
+  if(!$('#pDraai').value) $('#pDraai').value=100;
+  if(!$('#pCompl').value) $('#pCompl').value=30;
 }
 function leesInstellingen(){
   const getal=(id,min)=>Math.max(min,parseInt($(id).value,10)||0);
-  st.S=getal('#iS',0); st.verwacht=getal('#iVerwacht',1);
+  st.S=getal('#iS',0); st.duur=getal('#iDuur',5);
   st.allesWeg=$('#iAlles').checked; st.geluid=$('#iGeluid').checked;
   geluid.volume(st.geluid); bewaar(); tekenWiel(); ui();
 }
 const melding=t=>{ $('#melding').textContent=t; };
-$('#instellingen').addEventListener('input',e=>{ if(e.target.matches('#iS,#iVerwacht,#iAlles,#iGeluid')) leesInstellingen(); });
+$('#instellingen').addEventListener('input',e=>{ if(e.target.matches('#iS,#iDuur,#iAlles,#iGeluid')) leesInstellingen(); });
 $('#instellingen').addEventListener('click',e=>{ const s=e.target.closest('[data-veld]'); if(!s) return; const inp=$('#'+s.dataset.veld); inp.value=Math.max(0,(parseInt(inp.value,10)||0)+Number(s.dataset.d)); if(inp.id.startsWith('i')) leesInstellingen(); });
 $('#bSluit').addEventListener('click',()=>{ leesInstellingen(); geluid.start(); $('#instellingen').classList.remove('open'); if(document.activeElement) document.activeElement.blur(); if(!st.klaar){ st.klaar=true; bewaar(); } if(fase==='start') fase='rust'; wakker(); ui(); });
 $('#bTerug').addEventListener('click',()=>{ const b=st.beurten.pop(); if(!b){ melding('Er is nog geen beurt om terug te draaien.'); return; } if(b.k==='milka') st.S++; else if(b.k==='optreden') st.optGeweest=false; bewaar(); vulInstellingen(); tekenWiel(); ui(); melding(`Teruggedraaid: ${b.naam}, ${UIT[b.k].kop.toLowerCase()}`); });
