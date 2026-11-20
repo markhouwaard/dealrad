@@ -60,8 +60,12 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
 /* podium */
 #podium{position:fixed;inset:6vh 0 0 0;display:grid;grid-template-columns:58fr 42fr}
 #wielzone{position:relative;display:grid;place-items:center;min-height:0}
-#wielzone::before{content:"";position:absolute;inset:0;background:radial-gradient(closest-side,rgba(0,144,227,.32),rgba(0,144,227,.07) 62%,transparent);pointer-events:none}
-#wiel{position:relative;width:var(--wsize);height:var(--wsize);cursor:pointer}
+#wiel{position:relative;width:var(--wsize);height:var(--wsize);cursor:pointer;isolation:isolate;transition:transform 520ms var(--inuit)}
+#wiel::before{content:"";position:absolute;inset:-18%;background:radial-gradient(closest-side,rgba(0,144,227,.32),rgba(0,144,227,.07) 62%,transparent);pointer-events:none;z-index:-1}
+/* tijdens het draaien: rad groot in het midden, de rest weg */
+#top,#zij,#allesweg{transition:opacity 260ms ease}
+body.draaimodus #top,body.draaimodus #zij,body.draaimodus #hint,body.draaimodus #allesweg,body.draaimodus #geheim{opacity:0;pointer-events:none}
+body.draaimodus #wiel{transform:translate(21vw,-3vh) scale(var(--spinschaal,1.12))}
 #rand{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 12deg,#7d5a14,#f7d774,#a87a1e,#fff0b3,#9c7019,#f2c14e,#6e4f10,#f7d774,#b8860b,#ffe7a3,#7d5a14);box-shadow:0 0 6vmin rgba(242,193,78,.25)}
 #rand::after{content:"";position:absolute;inset:5.3%;border-radius:50%;background:#000;box-shadow:0 0 0 .4vmin #4a3508}
 #schijf{position:absolute;left:6.2%;top:6.2%;width:87.6%;height:87.6%;border-radius:50%;will-change:transform}
@@ -181,11 +185,11 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
 .u-milka .spot{left:28vw;top:34vh;width:170vmax;height:170vmax;transform:translate(-50%,-50%);background:repeating-conic-gradient(rgba(176,146,228,.17) 0 6deg,transparent 6deg 16deg);-webkit-mask:radial-gradient(closest-side,#000 20%,transparent);mask:radial-gradient(closest-side,#000 20%,transparent);animation:stralen 24s linear infinite}
 @keyframes stralen{to{transform:translate(-50%,-50%) rotate(360deg)}}
 .u-optreden .spot{left:4vw;top:0;width:48vw;height:100vh;background:conic-gradient(from 160deg at 50% -8%,transparent 0deg,rgba(255,236,190,.16) 12deg 28deg,transparent 40deg)}
-#uitslag .links{position:absolute;left:5vw;top:12vh;width:47vw;z-index:2}
-#uitslag .kopregel{font-size:11vh}
-#uitslag .kopregel.lang{font-size:8vh}
+#uitslag .links{position:absolute;left:5vw;top:10vh;width:47vw;z-index:2}
+#uitslag .kopregel{font-size:min(11vh,6.2vw)}
+#uitslag .kopregel.lang{font-size:min(8vh,4.6vw)}
 .u-milka .kopregel{color:#C9B4F0}
-.koewin{position:relative;width:30vh;animation:koein .7s cubic-bezier(.34,1.56,.64,1) both}
+.koewin{position:relative;width:24vh;animation:koein .7s cubic-bezier(.34,1.56,.64,1) both}
 .koewin svg{width:100%;height:auto;display:block;transform-origin:50% 90%;animation:knik 1.1s ease-in-out .7s 2}
 .koewin .boe{position:absolute;left:80%;top:1vh;background:#fff;color:#2B1B47;font-family:var(--head);font-weight:900;font-size:4.6vh;padding:.8vh 1.4vw;border-radius:2vh;opacity:0;transform:rotate(8deg);animation:boe .3s var(--uit) .45s forwards}
 @keyframes koein{from{opacity:0;transform:translateY(12vh) scale(.9)}to{opacity:1;transform:none}}
@@ -193,13 +197,13 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
 @keyframes boe{from{opacity:0;transform:rotate(8deg) scale(.85)}to{opacity:1;transform:rotate(8deg) scale(1)}}
 #koop{position:relative}
 #koop h1{padding-right:11vh}
-#koekop{position:absolute;right:1.2vw;top:-6.4vh;width:11.5vh}
+#koekop{position:absolute;right:1.3vw;top:1.6vh;width:10vh}
 #koekop svg{width:100%;height:auto;display:block;filter:drop-shadow(0 .6vh .8vh rgba(0,0,0,.55))}
 .u-bonus .kopregel{color:var(--oranje)}
 #uitslag .instructie{font-size:3.6vh;font-weight:700;line-height:1.28;margin-top:3vh;max-width:42vw}
 #uitslag .omroep{margin-top:3vh;max-width:42vw;padding:1.8vh 1.4vw;border-left:.6vh solid var(--goud);background:rgba(242,193,78,.09);font-size:2.6vh;line-height:1.38}
 #uitslag .omroep small{display:block;color:var(--goud);font-weight:700;font-size:1.8vh;margin-bottom:.5vh}
-#uitslag .effect{margin-top:4vh;position:relative}
+#uitslag .effect{margin-top:3vh;position:relative}
 #uitslag .verder{position:absolute;left:5vw;bottom:4.5vh;font-size:2vh;color:var(--zacht);opacity:0;transition:opacity 300ms ease}
 #uitslag .verder.aan{opacity:1}
 #printer{position:absolute;right:7.5vw;top:6.5vh;width:35vw;height:3.8vh;border-radius:1.2vh;background:linear-gradient(#2d323a,#101318);box-shadow:0 .7vh 0 #000;z-index:3}
@@ -275,6 +279,9 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
 .sneltoetsen{font-size:1.7vh;color:var(--zacht);line-height:1.8;column-count:2}
 .sneltoetsen kbd{margin:0 .5em 0 0}
 #melding{min-height:2.4vh;font-size:1.8vh;color:var(--goud);margin-bottom:1.4vh}
+#waarschuwing{border:1px solid #6b1d22;background:rgba(227,38,47,.1);border-radius:4px;padding:1.6vh 1.2vw;font-size:1.9vh;line-height:1.45;margin-bottom:2vh}
+#waarschuwing b{color:#ff9aa0}
+.versie{margin-right:auto;align-self:center;font-size:1.6vh;color:var(--zacht)}
 
 @media (prefers-reduced-motion:reduce){
   .speel *{animation-duration:.01ms!important;animation-iteration-count:1!important}
@@ -379,7 +386,10 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
       <label class="schakel"><input type="checkbox" id="iAlles"><span>Alles moet weg<br><small>Voor het laatste kwartier: bijna elke draai wordt Milka.</small></span></label>
       <label class="schakel"><input type="checkbox" id="iGeluid"><span>Geluid aan<br><small>Met de toets M zet je het geluid snel aan of uit.</small></span></label>
     </div>
-    <div class="knoppen"><button class="knopje" id="bTerug">Laatste beurt terugdraaien</button><button class="knopje" id="bScherm">Volledig scherm</button><button class="knopje rood" id="bWis">Alles wissen</button></div>
+    <div class="knoppen"><button class="knopje" id="bTerug">Laatste beurt terugdraaien</button><button class="knopje" id="bScherm">Volledig scherm</button><button class="knopje rood" id="bWis">Opnieuw beginnen</button></div>
+    <div id="waarschuwing" hidden><b>Weet je het zeker?</b> Alle beurten, de teamstand en de voorraad worden gewist. Dit kun je niet terugdraaien.
+      <div class="knoppen" style="margin:1.4vh 0 0"><button class="knopje rood" id="bWisJa">Ja, opnieuw beginnen</button><button class="knopje" id="bWisNee">Annuleren</button></div>
+    </div>
     <div id="melding"></div>
     <h3>Kaartjes printen</h3>
     <div class="groep">
@@ -396,7 +406,7 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
       <div><kbd>Enter</kbd>nieuwe klant</div><div><kbd>Spatie</kbd>draaien of verder</div><div><kbd>Esc</kbd>klant annuleren</div><div><kbd>S</kbd>instellingen</div>
       <div><kbd>M</kbd>geluid aan of uit</div><div><kbd>F</kbd>volledig scherm</div><div><kbd>J</kbd>stiekem: volgende draai Milka</div>
     </div>
-    <div class="knoppen" style="margin:2.4vh 0 0;justify-content:flex-end"><button class="knopje hoofd" id="bSluit">Klaar</button></div>
+    <div class="knoppen" style="margin:2.4vh 0 0;justify-content:flex-end"><span class="versie">Versie 5, 20 nov</span><button class="knopje hoofd" id="bSluit">Klaar</button></div>
   </div>
 </div>
 
@@ -584,7 +594,7 @@ function stickerOpVak(x,r,font){
 }
 function tekenWiel(){
   const px=schijf.clientWidth; if(!px) return;
-  const d=Math.min(2,window.devicePixelRatio||1);
+  const d=Math.min(3,(window.devicePixelRatio||1)*1.4);
   schijf.width=schijf.height=Math.round(px*d);
   const x=schijf.getContext('2d'); x.setTransform(d,0,0,d,0,0);
   const r=px/2, n=SEG.length, a=Math.PI*2/n, font=getComputedStyle(document.documentElement).getPropertyValue('--head').trim();
@@ -669,11 +679,16 @@ function draai(){
   gedwongen=null; $('#geheim').classList.remove('aan');
   const phi=(doel+.18+Math.random()*.64)*30, begin=hoek;
   const delta=(((-phi-begin)%360)+360)%360+360*(6+Math.floor(Math.random()*2));
-  geluid.zoef(); lampen('knipper');
-  zetAnim(260,p=>{ hoek=begin-8*easeInUit(p); },()=>{
-    const van=hoek, naar=begin+delta;
-    zetAnim(6300+Math.random()*900,p=>{ hoek=van+(naar-van)*easeUit(p); },()=>{ lampen('jaag'); setTimeout(()=>geland(doel),420); });
-  });
+  const w=$('#wiel'); w.style.setProperty('--spinschaal',(Math.min(innerHeight*.92,innerWidth*.96)/w.offsetWidth).toFixed(3));
+  document.body.classList.add('draaimodus');
+  setTimeout(()=>{
+    geluid.zoef(); lampen('knipper');
+    const start=hoek;
+    zetAnim(260,p=>{ hoek=start-8*easeInUit(p); },()=>{
+      const van=hoek, naar=begin+delta;
+      zetAnim(6300+Math.random()*900,p=>{ hoek=van+(naar-van)*easeUit(p); },()=>{ lampen('jaag'); setTimeout(()=>geland(doel),420); });
+    });
+  },450);
 }
 function geland(i){
   let k=SEG[i].k, op=null;
@@ -756,6 +771,7 @@ function naUitslag(auto){
   if(fase!=='uitslag'||(!auto&&Date.now()-uitslagSinds<1200)) return;
   clearTimeout(uitslagTimer);
   const el=$('#uitslag'); el.classList.remove('open'); el.innerHTML=''; deeltjes.length=0;
+  document.body.classList.remove('draaimodus');
   if(laatsteUitslag&&laatsteUitslag.k==='bonus'&&klant){ klant.bonus=true; fase='klaar'; }
   else { klant=null; fase='rust'; }
   ui();
@@ -849,7 +865,7 @@ setInterval(()=>{ if(fase==='rust') ui(); },30000);
 
 /* ---------------- instellingen ---------------- */
 function openInstellingen(welkom){
-  vulInstellingen(); $('#melding').textContent='';
+  vulInstellingen(); $('#melding').textContent=''; $('#waarschuwing').hidden=true;
   $('#iTitel').textContent=welkom?'Welkom bij het dealrad':'Instellingen';
   $('#iIntro').textContent=welkom?'Vul de voorraad in en druk op Start het rad. Je kunt alles later aanpassen met de toets S.':'Wijzigingen worden meteen bewaard.';
   $('#bSluit').textContent=welkom?'Start het rad':'Klaar';
@@ -873,7 +889,9 @@ $('#instellingen').addEventListener('click',e=>{ const s=e.target.closest('[data
 $('#bSluit').addEventListener('click',()=>{ leesInstellingen(); geluid.start(); $('#instellingen').classList.remove('open'); if(document.activeElement) document.activeElement.blur(); if(!st.klaar){ st.klaar=true; bewaar(); } if(fase==='start') fase='rust'; wakker(); ui(); });
 $('#bTerug').addEventListener('click',()=>{ const b=st.beurten.pop(); if(!b){ melding('Er is nog geen beurt om terug te draaien.'); return; } if(b.k==='milka') st.S++; else if(b.k==='optreden') st.optGeweest=false; bewaar(); vulInstellingen(); tekenWiel(); ui(); melding(`Teruggedraaid: ${b.naam}, ${UIT[b.k].kop.toLowerCase()}`); });
 $('#bScherm').addEventListener('click',volledigScherm);
-$('#bWis').addEventListener('click',()=>{ if(!confirm('Alles wissen? De voorraad, de teamstand en alle beurten gaan weg.')) return; st=vers(); bewaar(); vulInstellingen(); tekenWiel(); ui(); melding('Alles is gewist. Vul de voorraad opnieuw in.'); });
+$('#bWis').addEventListener('click',()=>{ $('#waarschuwing').hidden=false; $('#bWisNee').focus(); });
+$('#bWisNee').addEventListener('click',()=>{ $('#waarschuwing').hidden=true; });
+$('#bWisJa').addEventListener('click',()=>{ $('#waarschuwing').hidden=true; st=vers(); bewaar(); klant=null; gedwongen=null; fase='start'; tekenWiel(); ui(); openInstellingen(true); melding('Alles is gewist. Vul de voorraad in en druk op Start het rad.'); });
 $('#bPrint').addEventListener('click',printen);
 function printen(){
   const nd=Math.max(0,parseInt($('#pDraai').value,10)||0), nc=Math.max(0,parseInt($('#pCompl').value,10)||0);
