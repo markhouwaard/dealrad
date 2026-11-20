@@ -55,6 +55,7 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
 #usps{display:flex;gap:2.2vw;list-style:none;font-weight:700;font-size:1.75vh}
 #usps li{display:flex;align-items:center;gap:.45em;white-space:nowrap}
 #usps svg{width:1.3em;height:1.3em;flex:none}
+@media (max-aspect-ratio:3/2){#usps li:last-child{display:none}}
 
 /* podium */
 #podium{position:fixed;inset:6vh 0 0 0;display:grid;grid-template-columns:58fr 42fr}
@@ -653,7 +654,7 @@ function gewichten(){
     return x;
   });
   const vakken=SEG.filter(s=>s.k==='milka').length;
-  if(st.S<=0) return SEG.map((s,i)=>s.k==='milka'?(nietenOpRij?0:.5):w[i]);
+  if(st.S<=0) return SEG.map((s,i)=>s.k==='milka'?(nietenOpRij?0:.2):w[i]);
   let p=st.allesWeg?.85:Math.min(.85,st.S/rest);
   p=Math.min(.9,p*(1+.2*Math.max(0,droog-3)));
   const M=p*w.reduce((a,b)=>a+b,0)/(1-p);
@@ -796,7 +797,7 @@ function stapjes(){ const heeft=$('#naam').value.trim().length>0; $('#st1').clas
 function openInchecken(){
   if(fase!=='rust') return; geluid.start();
   fase='inchecken'; $('#naam').value=''; $('#dubbel').textContent=''; stapjes();
-  $('#inchecken').classList.add('open'); setTimeout(()=>$('#naam').focus(),30); ui();
+  $('#inchecken').classList.add('open'); $('#naam').focus(); ui();
 }
 function sluitInchecken(){ $('#inchecken').classList.remove('open'); $('#naam').blur(); if(fase==='inchecken'){ fase='rust'; ui(); } }
 $('#naam').addEventListener('input',()=>{ stapjes(); const v=$('#naam').value.trim().toLowerCase(); const al=v&&st.beurten.some(b=>!b.bonus&&b.naam.toLowerCase()===v); $('#dubbel').textContent=al?'Let op: deze naam heeft vanavond al gedraaid.':''; });
@@ -869,7 +870,7 @@ function leesInstellingen(){
 const melding=t=>{ $('#melding').textContent=t; };
 $('#instellingen').addEventListener('input',e=>{ if(e.target.matches('#iS,#iVerwacht,#iAlles,#iGeluid')) leesInstellingen(); });
 $('#instellingen').addEventListener('click',e=>{ const s=e.target.closest('[data-veld]'); if(!s) return; const inp=$('#'+s.dataset.veld); inp.value=Math.max(0,(parseInt(inp.value,10)||0)+Number(s.dataset.d)); if(inp.id.startsWith('i')) leesInstellingen(); });
-$('#bSluit').addEventListener('click',()=>{ leesInstellingen(); geluid.start(); $('#instellingen').classList.remove('open'); if(!st.klaar){ st.klaar=true; bewaar(); } if(fase==='start') fase='rust'; wakker(); ui(); });
+$('#bSluit').addEventListener('click',()=>{ leesInstellingen(); geluid.start(); $('#instellingen').classList.remove('open'); if(document.activeElement) document.activeElement.blur(); if(!st.klaar){ st.klaar=true; bewaar(); } if(fase==='start') fase='rust'; wakker(); ui(); });
 $('#bTerug').addEventListener('click',()=>{ const b=st.beurten.pop(); if(!b){ melding('Er is nog geen beurt om terug te draaien.'); return; } if(b.k==='milka') st.S++; else if(b.k==='optreden') st.optGeweest=false; bewaar(); vulInstellingen(); tekenWiel(); ui(); melding(`Teruggedraaid: ${b.naam}, ${UIT[b.k].kop.toLowerCase()}`); });
 $('#bScherm').addEventListener('click',volledigScherm);
 $('#bWis').addEventListener('click',()=>{ if(!confirm('Alles wissen? De voorraad, de teamstand en alle beurten gaan weg.')) return; st=vers(); bewaar(); vulInstellingen(); tekenWiel(); ui(); melding('Alles is gewist. Vul de voorraad opnieuw in.'); });
@@ -898,7 +899,7 @@ addEventListener('keydown',e=>{
   geluid.start();
   if($('#instellingen').classList.contains('open')){ if(e.key==='Escape') $('#bSluit').click(); return; }
   if(fase==='inchecken'){ if(e.key==='Escape'){ e.preventDefault(); sluitInchecken(); } return; }
-  if(e.target.tagName==='INPUT') return;
+  if(e.target.tagName==='INPUT'&&e.target.offsetParent!==null) return;
   const k=e.key.length===1?e.key.toLowerCase():e.key;
   if(k===' '||k==='Enter'){
     e.preventDefault(); if(e.repeat) return;
