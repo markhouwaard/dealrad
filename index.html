@@ -381,13 +381,17 @@ body.draaimodus #wiel{transform:translate(21vw,-3vh) scale(var(--spinschaal,1.12
         <div class="stapper"><button data-veld="iDuur" data-d="-5">−</button><input id="iDuur" inputmode="numeric"><button data-veld="iDuur" data-d="5">+</button></div>
         <small>De klok start bij de eerste draai. Het rad verdeelt de repen over deze tijd; de laatste 5 minuten gaat Alles moet weg vanzelf aan.</small>
       </div>
+      <div class="veld">Uitgedeelde vouchers
+        <div class="stapper"><button data-veld="iVouchers" data-d="-10">−</button><input id="iVouchers" inputmode="numeric"><button data-veld="iVouchers" data-d="10">+</button></div>
+        <small>Het rad houdt repen achter de hand voor iedereen met een voucher. Wat over is, gaat in de laatste 5 minuten weg.</small>
+      </div>
     </div>
     <h3>Tijdens de borrel</h3>
     <div class="groep">
       <label class="schakel"><input type="checkbox" id="iAlles"><span>Alles moet weg<br><small>Voor het laatste kwartier: bijna elke draai wordt Milka.</small></span></label>
       <label class="schakel"><input type="checkbox" id="iGeluid"><span>Geluid aan<br><small>Met de toets M zet je het geluid snel aan of uit.</small></span></label>
     </div>
-    <div class="knoppen"><button class="knopje" id="bTerug">Laatste beurt terugdraaien</button><button class="knopje" id="bScherm">Volledig scherm</button><button class="knopje rood" id="bWis">Opnieuw beginnen</button></div>
+    <div class="knoppen"><button class="knopje" id="bTerug">Laatste beurt terugdraaien</button><button class="knopje" id="bKlok">Klok opnieuw starten</button><button class="knopje" id="bScherm">Volledig scherm</button><button class="knopje rood" id="bWis">Opnieuw beginnen</button></div>
     <div id="waarschuwing" hidden><b>Weet je het zeker?</b> Alle beurten, de teamstand en de voorraad worden gewist. Dit kun je niet terugdraaien.
       <div class="knoppen" style="margin:1.4vh 0 0"><button class="knopje rood" id="bWisJa">Ja, opnieuw beginnen</button><button class="knopje" id="bWisNee">Annuleren</button></div>
     </div>
@@ -407,7 +411,7 @@ body.draaimodus #wiel{transform:translate(21vw,-3vh) scale(var(--spinschaal,1.12
       <div><kbd>Enter</kbd>nieuwe klant</div><div><kbd>Spatie</kbd>draaien of verder</div><div><kbd>Esc</kbd>klant annuleren</div><div><kbd>S</kbd>instellingen</div>
       <div><kbd>M</kbd>geluid aan of uit</div><div><kbd>F</kbd>volledig scherm</div><div><kbd>J</kbd>stiekem: volgende draai Milka</div>
     </div>
-    <div class="knoppen" style="margin:2.4vh 0 0;justify-content:flex-end"><span class="versie">Versie 6, 20 nov</span><button class="knopje hoofd" id="bSluit">Klaar</button></div>
+    <div class="knoppen" style="margin:2.4vh 0 0;justify-content:flex-end"><span class="versie">Versie 7, 20 nov</span><button class="knopje hoofd" id="bSluit">Klaar</button></div>
   </div>
 </div>
 
@@ -502,7 +506,7 @@ const COMPLIMENTEN=['Jij bent de enige deal hier zonder kleine lettertjes.','Jij
 
 /* ---------------- opslag ---------------- */
 const OPSLAG='dealrad-v2';
-const vers=()=>({S:0,duur:30,startTijd:null,beurten:[],optGeweest:false,allesWeg:false,geluid:true,bon:0,klaar:false});
+const vers=()=>({S:0,duur:30,vouchers:100,startTijd:null,beurten:[],optGeweest:false,allesWeg:false,geluid:true,bon:0,klaar:false});
 function laad(){ try{ const j=JSON.parse(localStorage.getItem(OPSLAG)||'null'); if(j&&Array.isArray(j.beurten)) return Object.assign(vers(),j); }catch(e){} return vers(); }
 function bewaar(){ try{ localStorage.setItem(OPSLAG,JSON.stringify(st)); }catch(e){} }
 let st=laad();
@@ -656,7 +660,8 @@ function lus(t){
 function gewichten(){
   const echte=st.beurten.filter(b=>!b.bonus).slice(-8);
   const perBeurt=echte.length>=3?klem((echte[echte.length-1].t-echte[0].t)/(echte.length-1),12000,90000):25000;
-  const rest=Math.max(1,Math.round(restTijd()/perBeurt)), aw=allesWegNu();
+  const gedaan=st.beurten.filter(b=>!b.bonus).length;
+  const rest=Math.max(1,Math.round(restTijd()/perBeurt),(st.vouchers??100)-gedaan), aw=allesWegNu();
   const laatste=st.beurten.slice(-2), nietenOpRij=laatste.length===2&&laatste.every(b=>NIETEN.includes(b.k));
   let droog=0; for(let i=st.beurten.length-1;i>=0&&st.beurten[i].k!=='milka';i--) droog++;
   const w=SEG.map(s=>{
@@ -885,23 +890,24 @@ function openInstellingen(welkom){
   $('#instellingen').classList.add('open');
 }
 function vulInstellingen(){
-  $('#iS').value=st.S; $('#iDuur').value=st.duur||30;
+  $('#iS').value=st.S; $('#iDuur').value=st.duur||30; $('#iVouchers').value=st.vouchers??100;
   $('#iAlles').checked=st.allesWeg; $('#iGeluid').checked=st.geluid;
   if(!$('#pDraai').value) $('#pDraai').value=100;
   if(!$('#pCompl').value) $('#pCompl').value=30;
 }
 function leesInstellingen(){
   const getal=(id,min)=>Math.max(min,parseInt($(id).value,10)||0);
-  st.S=getal('#iS',0); st.duur=getal('#iDuur',5);
+  st.S=getal('#iS',0); st.duur=getal('#iDuur',5); st.vouchers=getal('#iVouchers',0);
   st.allesWeg=$('#iAlles').checked; st.geluid=$('#iGeluid').checked;
   geluid.volume(st.geluid); bewaar(); tekenWiel(); ui();
 }
 const melding=t=>{ $('#melding').textContent=t; };
-$('#instellingen').addEventListener('input',e=>{ if(e.target.matches('#iS,#iDuur,#iAlles,#iGeluid')) leesInstellingen(); });
+$('#instellingen').addEventListener('input',e=>{ if(e.target.matches('#iS,#iDuur,#iVouchers,#iAlles,#iGeluid')) leesInstellingen(); });
 $('#instellingen').addEventListener('click',e=>{ const s=e.target.closest('[data-veld]'); if(!s) return; const inp=$('#'+s.dataset.veld); inp.value=Math.max(0,(parseInt(inp.value,10)||0)+Number(s.dataset.d)); if(inp.id.startsWith('i')) leesInstellingen(); });
 $('#bSluit').addEventListener('click',()=>{ leesInstellingen(); geluid.start(); $('#instellingen').classList.remove('open'); if(document.activeElement) document.activeElement.blur(); if(!st.klaar){ st.klaar=true; bewaar(); } if(fase==='start') fase='rust'; wakker(); ui(); });
 $('#bTerug').addEventListener('click',()=>{ const b=st.beurten.pop(); if(!b){ melding('Er is nog geen beurt om terug te draaien.'); return; } if(b.k==='milka') st.S++; else if(b.k==='optreden') st.optGeweest=false; bewaar(); vulInstellingen(); tekenWiel(); ui(); melding(`Teruggedraaid: ${b.naam}, ${UIT[b.k].kop.toLowerCase()}`); });
 $('#bScherm').addEventListener('click',volledigScherm);
+$('#bKlok').addEventListener('click',()=>{ st.startTijd=null; bewaar(); klok(); melding('De klok start opnieuw bij de volgende draai.'); });
 $('#bWis').addEventListener('click',()=>{ $('#waarschuwing').hidden=false; $('#bWisNee').focus(); });
 $('#bWisNee').addEventListener('click',()=>{ $('#waarschuwing').hidden=true; });
 $('#bWisJa').addEventListener('click',()=>{ $('#waarschuwing').hidden=true; st=vers(); bewaar(); klant=null; gedwongen=null; fase='start'; tekenWiel(); ui(); openInstellingen(true); melding('Alles is gewist. Vul de voorraad in en druk op Start het rad.'); });
