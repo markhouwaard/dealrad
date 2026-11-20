@@ -8,18 +8,19 @@
 <!--
 Black Friday-dealrad voor de kantineborrel van Team Smart Home (vrijdag 20 nov 2026).
 Ontwerp, akkoord 17 nov 2026:
-- Grap op nep-kortingen, in Coolblue-kleuren op zwart. Echte prijs alleen stroopwafels:
-  losse uit de schaal (3 vakken) en hele pakken (mega deal).
+- Grap op nep-kortingen, in Coolblue-kleuren op zwart. Echte prijs: repen Milka (update
+  20 nov: er waren geen stroopwafels). Vier lila Milka-vakken met koeienvlekken, elke winst is 1 reep.
 - Verder: 1+1 gratis (nog een draai), gratis drankje (bier of wijn), gratis compliment
   (complimentbon, inleveren aan de bar), de host jongleert met mandarijnen (kans ongeveer
   1 op 700 per draai, hooguit 1 keer, uit te zetten) en vier nieten: prijsfout, uitverkocht,
   gratis verzending, no returns.
 - Beurt: naam + team -> teamanimatie -> spatie -> rad -> kassabon met eigen effect en geluid.
-- De voorraad stuurt de kans zo dat de stroopwafels tot het eind duren. Op = sticker UITVERKOCHT.
+- De voorraad stuurt de kans zo dat de repen precies op gaan, en er vallen nooit meer dan
+  2 nieten op rij. Op = sticker UITVERKOCHT. Laatste kwartier: Alles moet weg.
 - Alles wordt in de browser onthouden, ook na verversen. Werkt zonder internet
   (de lettertypen vallen dan terug op de letters van de laptop).
 Sneltoetsen: Enter nieuwe klant, spatie draaien, S instellingen, M geluid, F volledig scherm,
-Esc klant annuleren. Stiekem, vlak voor het draaien: J = mega deal, O = optreden.
+Esc klant annuleren. Stiekem, vlak voor het draaien: J = Milka, O = optreden.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -176,13 +177,23 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
 /* uitslag */
 #uitslag{background:rgba(0,0,0,.9);overflow:hidden;cursor:pointer}
 #uitslag .spot{position:absolute;pointer-events:none}
-.u-mega .spot{left:28vw;top:34vh;width:170vmax;height:170vmax;transform:translate(-50%,-50%);background:repeating-conic-gradient(rgba(242,193,78,.17) 0 6deg,transparent 6deg 16deg);-webkit-mask:radial-gradient(closest-side,#000 20%,transparent);mask:radial-gradient(closest-side,#000 20%,transparent);animation:stralen 24s linear infinite}
+.u-milka .spot{left:28vw;top:34vh;width:170vmax;height:170vmax;transform:translate(-50%,-50%);background:repeating-conic-gradient(rgba(176,146,228,.17) 0 6deg,transparent 6deg 16deg);-webkit-mask:radial-gradient(closest-side,#000 20%,transparent);mask:radial-gradient(closest-side,#000 20%,transparent);animation:stralen 24s linear infinite}
 @keyframes stralen{to{transform:translate(-50%,-50%) rotate(360deg)}}
 .u-optreden .spot{left:4vw;top:0;width:48vw;height:100vh;background:conic-gradient(from 160deg at 50% -8%,transparent 0deg,rgba(255,236,190,.16) 12deg 28deg,transparent 40deg)}
 #uitslag .links{position:absolute;left:5vw;top:12vh;width:47vw;z-index:2}
 #uitslag .kopregel{font-size:11vh}
 #uitslag .kopregel.lang{font-size:8vh}
-.u-mega .kopregel{color:var(--goud)}
+.u-milka .kopregel{color:#C9B4F0}
+.koewin{position:relative;width:30vh;animation:koein .7s cubic-bezier(.34,1.56,.64,1) both}
+.koewin svg{width:100%;height:auto;display:block;transform-origin:50% 90%;animation:knik 1.1s ease-in-out .7s 2}
+.koewin .boe{position:absolute;left:80%;top:1vh;background:#fff;color:#2B1B47;font-family:var(--head);font-weight:900;font-size:4.6vh;padding:.8vh 1.4vw;border-radius:2vh;opacity:0;transform:rotate(8deg);animation:boe .3s var(--uit) .45s forwards}
+@keyframes koein{from{opacity:0;transform:translateY(12vh) scale(.9)}to{opacity:1;transform:none}}
+@keyframes knik{50%{transform:rotate(-6deg)}}
+@keyframes boe{from{opacity:0;transform:rotate(8deg) scale(.85)}to{opacity:1;transform:rotate(8deg) scale(1)}}
+#koop{position:relative}
+#koop h1{padding-right:11vh}
+#koekop{position:absolute;right:1.2vw;top:-6.4vh;width:11.5vh}
+#koekop svg{width:100%;height:auto;display:block;filter:drop-shadow(0 .6vh .8vh rgba(0,0,0,.55))}
 .u-bonus .kopregel{color:var(--oranje)}
 #uitslag .instructie{font-size:3.6vh;font-weight:700;line-height:1.28;margin-top:3vh;max-width:42vw}
 #uitslag .omroep{margin-top:3vh;max-width:42vw;padding:1.8vh 1.4vw;border-left:.6vh solid var(--goud);background:rgba(242,193,78,.09);font-size:2.6vh;line-height:1.38}
@@ -316,6 +327,7 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
   </section>
   <aside id="zij">
     <div class="blok" id="koop">
+      <div id="koekop" aria-hidden="true"></div>
       <h1 class="kop">Dealrad Black Friday Edition 2026</h1>
       <div class="sub">Eén draai per voucher</div>
       <div class="sterren"><b>★★★★★</b><strong>9,1</strong><span>2.384 reviews</span></div>
@@ -352,15 +364,13 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
     <p class="intro" id="iIntro"></p>
     <h3>Voorraad</h3>
     <div class="groep">
-      <div class="veld">Losse stroopwafels in de schaal
+      <div class="veld">Repen Milka
         <div class="stapper"><button data-veld="iS" data-d="-1">−</button><input id="iS" inputmode="numeric"><button data-veld="iS" data-d="1">+</button></div>
-      </div>
-      <div class="veld">Hele pakken (mega deal)
-        <div class="stapper"><button data-veld="iP" data-d="-1">−</button><input id="iP" inputmode="numeric"><button data-veld="iP" data-d="1">+</button></div>
+        <small>Elke winst is één reep. Het rad verdeelt ze zo dat ze aan het eind op zijn.</small>
       </div>
       <div class="veld">Verwacht aantal draaiers
         <div class="stapper"><button data-veld="iVerwacht" data-d="-10">−</button><input id="iVerwacht" inputmode="numeric"><button data-veld="iVerwacht" data-d="10">+</button></div>
-        <small>Hiermee verdeelt het rad de stroopwafels over de hele borrel.</small>
+        <small>Hiermee verdeelt het rad de repen over de hele borrel. Liever een eerlijke schatting dan te hoog.</small>
       </div>
       <div class="veld">Optreden van de host
         <label class="schakel"><input type="checkbox" id="iOpt"><span>Mag op het rad vallen<br><small id="iOptTekst"></small></span></label>
@@ -368,7 +378,7 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
     </div>
     <h3>Tijdens de borrel</h3>
     <div class="groep">
-      <label class="schakel"><input type="checkbox" id="iAlles"><span>Alles moet weg<br><small>Voor het laatste kwartier: veel meer kans op stroopwafels.</small></span></label>
+      <label class="schakel"><input type="checkbox" id="iAlles"><span>Alles moet weg<br><small>Voor het laatste kwartier: bijna elke draai wordt Milka.</small></span></label>
       <label class="schakel"><input type="checkbox" id="iGeluid"><span>Geluid aan<br><small>Met de toets M zet je het geluid snel aan of uit.</small></span></label>
     </div>
     <div class="knoppen"><button class="knopje" id="bTerug">Laatste beurt terugdraaien</button><button class="knopje" id="bScherm">Volledig scherm</button><button class="knopje rood" id="bWis">Alles wissen</button></div>
@@ -386,7 +396,7 @@ kbd{font-family:var(--body);font-weight:700;font-size:.68em;padding:.15em .55em;
     <h3>Sneltoetsen</h3>
     <div class="sneltoetsen">
       <div><kbd>Enter</kbd>nieuwe klant</div><div><kbd>Spatie</kbd>draaien of verder</div><div><kbd>Esc</kbd>klant annuleren</div><div><kbd>S</kbd>instellingen</div>
-      <div><kbd>M</kbd>geluid aan of uit</div><div><kbd>F</kbd>volledig scherm</div><div><kbd>J</kbd>stiekem: volgende draai mega deal</div><div><kbd>O</kbd>stiekem: volgende draai optreden</div>
+      <div><kbd>M</kbd>geluid aan of uit</div><div><kbd>F</kbd>volledig scherm</div><div><kbd>J</kbd>stiekem: volgende draai Milka</div><div><kbd>O</kbd>stiekem: volgende draai optreden</div>
     </div>
     <div class="knoppen" style="margin:2.4vh 0 0;justify-content:flex-end"><button class="knopje hoofd" id="bSluit">Klaar</button></div>
   </div>
@@ -414,7 +424,7 @@ const TEAMS=[
  {id:'keukenKlein',naam:'Team Keukenapparatuur Klein',kort:'Keuken Klein',regel:'Pop! Je kans is klaar.',geluid:'plop'},
  {id:'koffie',naam:'Team Koffieapparatuur',kort:'Koffie',regel:'Vers gezet: een sterke kans op winst.'},
  {id:'laptops',naam:'Team Laptops, Desktops & Accessoires',kort:'Laptops & Desktops',regel:'Updates installeren... 1 van 1.'},
- {id:'monitoren',naam:'Team Monitoren, Opslag & Componenten',kort:'Monitoren & Componenten',regel:'Geheugen vol? Voor een stroopwafel is altijd plek.'},
+ {id:'monitoren',naam:'Team Monitoren, Opslag & Componenten',kort:'Monitoren & Componenten',regel:'Geheugen vol? Voor chocola is altijd plek.'},
  {id:'verzorging',naam:'Team Persoonlijke Verzorging',kort:'Persoonlijke Verzorging',regel:'Strak geschoren voor de foto.',geluid:'zoem'},
  {id:'smarthome',naam:'Team Smart Home',kort:'Smart Home',regel:'De organisatie draait zelf mee. Verdacht.'},
  {id:'telefoons',naam:'Team Telefoons, Tablets & Accessoires',kort:'Telefoons & Tablets',regel:'1 nieuwe melding: jij mag draaien.',geluid:'zoem'},
@@ -446,44 +456,44 @@ const ICONEN={
 };
 const icoon=id=>`<svg class="ico" viewBox="0 0 64 64" aria-hidden="true">${ICONEN[id]}</svg>`;
 
-/* vakken met de klok mee vanaf de wijzer; de mega deal ligt tussen prijsfout en uitverkocht */
+/* vakken met de klok mee vanaf de wijzer: lila Milka, zwarte niet, kleur, steeds om en om */
 const SEG=[
- {k:'mega',l:['MEGA','DEAL'],c:'#F2C14E',t:'#111'},
+ {k:'milka',l:['MILKA'],c:'#8C6CC2'},
  {k:'uitverkocht',l:['UITVERKOCHT'],c:'#000'},
- {k:'stroop',l:['STROOPWAFEL'],c:'#0090E3'},
- {k:'drank',l:['GRATIS','DRANKJE'],c:'#1C4684'},
+ {k:'drank',l:['GRATIS','DRANKJE'],c:'#0090E3'},
+ {k:'milka',l:['MILKA'],c:'#8C6CC2'},
  {k:'noreturns',l:['NO RETURNS'],c:'#000'},
- {k:'stroop',l:['STROOPWAFEL'],c:'#0090E3'},
  {k:'compliment',l:['GRATIS','COMPLIMENT'],c:'#1C4684'},
+ {k:'milka',l:['MILKA'],c:'#8C6CC2'},
  {k:'verzending',l:['GRATIS','VERZENDING'],c:'#000'},
- {k:'stroop',l:['STROOPWAFEL'],c:'#0090E3'},
  {k:'bonus',l:['1+1','GRATIS'],c:'#FF6600'},
+ {k:'milka',l:['MILKA'],c:'#8C6CC2'},
  {k:'optreden',l:['HOST','JONGLEERT'],c:'#1C4684'},
  {k:'prijsfout',l:['PRIJSFOUT'],c:'#000'}
 ];
-/* basiskans per vak; het optreden valt gemiddeld ongeveer 1 op de 700 draaien */
-const BASIS={mega:.35,stroop:1,bonus:.8,drank:1,compliment:.9,optreden:.015,prijsfout:1,uitverkocht:1,verzending:1,noreturns:1};
+/* basiskans per vak (Milka wordt apart berekend uit de voorraad); het optreden valt ongeveer 1 op de 700 draaien */
+const BASIS={drank:1.4,compliment:1.2,bonus:.7,optreden:.01,prijsfout:.55,uitverkocht:.55,verzending:.55,noreturns:.55};
 const NIETEN=['prijsfout','uitverkocht','verzending','noreturns'];
-const WINST=['stroop','mega','drank','compliment','optreden'];
-const WINNAAM={stroop:'een stroopwafel',mega:'een heel pak stroopwafels',drank:'een gratis drankje',compliment:'een compliment',optreden:'een optreden van de host'};
+const WINST=['milka','drank','compliment','optreden'];
+const WINNAAM={milka:'een reep Milka',drank:'een gratis drankje',compliment:'een compliment',optreden:'een optreden van de host'};
+const KOE='<svg viewBox="0 0 120 112" aria-hidden="true"><path d="M31 24c-7-10-5-19 1-21 2 7 6 11 11 13z" fill="#F4E7C9"/><path d="M89 24c7-10 5-19-1-21-2 7-6 11-11 13z" fill="#F4E7C9"/><ellipse cx="15" cy="42" rx="15" ry="8" transform="rotate(-20 15 42)" fill="#7A5BB3"/><ellipse cx="105" cy="42" rx="15" ry="8" transform="rotate(20 105 42)" fill="#7A5BB3"/><path d="M60 13c22 0 36 14 36 34 0 12-4 20-8 26H32c-4-6-8-14-8-26 0-20 14-34 36-34z" fill="#8C6CC2"/><path d="M71 17c10 2 18 9 20 18-6 4-14 2-18-4-3-4-4-9-2-14z" fill="#fff"/><path d="M31 40c2-7 7-11 12-12-1 6-5 11-12 12z" fill="#fff"/><circle cx="45" cy="45" r="5" fill="#1B1230"/><circle cx="75" cy="45" r="5" fill="#1B1230"/><circle cx="46.6" cy="43.4" r="1.6" fill="#fff"/><circle cx="76.6" cy="43.4" r="1.6" fill="#fff"/><rect x="30" y="58" width="60" height="38" rx="19" fill="#F6C6D6"/><ellipse cx="48" cy="76" rx="5" ry="6.5" fill="#B9718C"/><ellipse cx="72" cy="76" rx="5" ry="6.5" fill="#B9718C"/><path d="M50 97h20l4 12H46z" fill="#F2C14E"/><circle cx="60" cy="108.5" r="2.4" fill="#9C7019"/></svg>';
 const UIT={
- stroop:{kop:'Deal!',regels:[['1x Stroopwafel','1,49'],['Black Friday-korting','-1,49']],totaal:'0,-',bespaar:'Je bespaart 100%',doe:'Pak je stroopwafel uit de schaal.'},
- mega:{kop:'Mega deal!',regels:[['1x Pak stroopwafels','14,99'],['Black Friday-korting','-14,99']],totaal:'0,-',bespaar:'Je bespaart alles',doe:'Haal je hele pak stroopwafels op bij de host.',omroep:true},
+ milka:{kop:'Milka-deal!',regels:[['1x Reep Milka','1,99'],['Black Friday-korting','-1,99']],totaal:'0,-',bespaar:'Je bespaart 100%',doe:'Haal je reep Milka op bij de host.',omroep:true},
  bonus:{kop:'1+1 gratis',regels:[['1x Draai','0,-'],['1x Extra draai','gratis']],totaal:'0,-',bespaar:'Je bespaart een voucher',doe:'Druk op de spatiebalk en draai meteen nog een keer.'},
  drank:{kop:'Gratis drankje',regels:[['1x Bier of wijn','0,-'],['Black Friday-korting','-0,-']],totaal:'0,-',bespaar:'Je bespaart niks. Het was al gratis.',doe:'Loop naar de bar en kies bier of wijn. Proost!'},
  compliment:{kop:'Gratis compliment',regels:[['1x Compliment van de barman','0,-']],totaal:'0,-',bespaar:'Waarde: onbetaalbaar',doe:'Haal je complimentbon op bij de host en lever hem in aan de bar.'},
  optreden:{kop:'De host jongleert!',regels:[['1x Jongleeract (3 mandarijnen)','0,-'],['Eenmalige actie','op = op']],totaal:'0,-',bespaar:'Dit gebeurt maar één keer vanavond',doe:'Applaus graag. De host jongleert met drie mandarijnen.'},
- prijsfout:{kop:'Prijsfout!',regels:[['1x Pak stroopwafels','0,01']],totaal:'0,01',bespaar:'We moeten je bestelling helaas annuleren.',doe:'Helaas, geen prijs. Wel een goed verhaal.',stempel:'Geannuleerd'},
+ prijsfout:{kop:'Prijsfout!',regels:[['1x Doos Milka (40 repen)','0,01']],totaal:'0,01',bespaar:'We moeten je bestelling helaas annuleren.',doe:'Helaas, geen prijs. Wel een goed verhaal.',stempel:'Geannuleerd'},
  uitverkocht:{kop:'Uitverkocht',regels:[['1x Je droomdeal','---']],totaal:'0,-',bespaar:'Op = op.',doe:'Helaas, geen prijs. Je was net te laat.',stempel:'Uitverkocht'},
  verzending:{kop:'Gratis verzending!',regels:[['Verzendkosten','0,-'],['Artikelen','0']],totaal:'0,-',bespaar:'Je ontvangt niks. Wel supersnel.',doe:'Helaas, geen prijs. Maar wel gratis verzonden.'},
  noreturns:{kop:'No returns',regels:[['0 artikelen','0,-']],totaal:'0,-',bespaar:'Je wint helemaal niks.',doe:'Helaas, geen prijs. En ruilen kan niet.',stempel:'No returns'}
 };
-const VOETEN=['Alles voor een stroopwafel.','Bedankt en tot de volgende borrel!','Klanten geven dit rad een 9,1.','Bewaar deze bon niet. Echt niet.','Niet goed? Jammer.'];
-const COMPLIMENTEN=['Jij bent de enige deal hier zonder kleine lettertjes.','Jij bent nooit uitverkocht.','Jou zou ik nooit retourneren.','Jij scoort hoger dan onze klantbeoordeling.','Met jou erbij is het elke dag Black Friday.','Jij bent een topdeal, en dan zonder korting.','Jij bent warmer dan een verse stroopwafel.','Als jij een product was, had je vijf sterren.','Jij bent beter dan gratis bezorging.','Jij bent een cadeautje, zelfs zonder inpakpapier.'];
+const VOETEN=['Alles voor een stukje chocola.','Bedankt en tot de volgende borrel!','Klanten geven dit rad een 9,1.','Bewaar deze bon niet. Echt niet.','Niet goed? Jammer.'];
+const COMPLIMENTEN=['Jij bent de enige deal hier zonder kleine lettertjes.','Jij bent nooit uitverkocht.','Jou zou ik nooit retourneren.','Jij scoort hoger dan onze klantbeoordeling.','Met jou erbij is het elke dag Black Friday.','Jij bent een topdeal, en dan zonder korting.','Jij bent zoeter dan een reep Milka.','Als jij een product was, had je vijf sterren.','Jij bent beter dan gratis bezorging.','Jij bent een cadeautje, zelfs zonder inpakpapier.'];
 
 /* ---------------- opslag ---------------- */
-const OPSLAG='dealrad-v1';
-const vers=()=>({S:0,P:0,verwacht:100,beurten:[],optAan:true,optGeweest:false,allesWeg:false,geluid:true,bon:0,klaar:false});
+const OPSLAG='dealrad-v2';
+const vers=()=>({S:0,verwacht:100,beurten:[],optAan:true,optGeweest:false,allesWeg:false,geluid:true,bon:0,klaar:false});
 function laad(){ try{ const j=JSON.parse(localStorage.getItem(OPSLAG)||'null'); if(j&&Array.isArray(j.beurten)) return Object.assign(vers(),j); }catch(e){} return vers(); }
 function bewaar(){ try{ localStorage.setItem(OPSLAG,JSON.stringify(st)); }catch(e){} }
 let st=laad();
@@ -539,13 +549,21 @@ const geluid=(()=>{
     zoem(){ [0,.16,.32].forEach(a=>toon(150,.12,{type:'square',vol:.09,at:a,filter:400})); },
     bonk(){ toon(120,.25,{vol:.6,naar:45}); ruisje(.08,{vol:.3,type:'lowpass',f:500}); },
     plop(){ toon(900,.08,{vol:.2,naar:300}); },
-    glitch(){ for(let i=0;i<7;i++) ruisje(.035,{vol:.22,f:800+Math.random()*5000,q:4,at:i*.055}); }
+    glitch(){ for(let i=0;i<7;i++) ruisje(.035,{vol:.22,f:800+Math.random()*5000,q:4,at:i*.055}); },
+    boe(){
+      if(!ctx) return; const t=ctx.currentTime, f=ctx.createBiquadFilter(), g=ctx.createGain(), l=ctx.createOscillator(), lg=ctx.createGain();
+      f.type='bandpass'; f.Q.value=1.3; f.frequency.setValueAtTime(320,t); f.frequency.linearRampToValueAtTime(850,t+.3); f.frequency.linearRampToValueAtTime(380,t+1.15);
+      g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.35,t+.12); g.gain.setValueAtTime(.35,t+.85); g.gain.exponentialRampToValueAtTime(.0001,t+1.25);
+      l.frequency.value=5; lg.gain.value=3; l.connect(lg); f.connect(g); g.connect(master);
+      [150,151.6].forEach(b=>{ const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.setValueAtTime(b,t); o.frequency.linearRampToValueAtTime(b*1.16,t+.25); o.frequency.linearRampToValueAtTime(b*.78,t+1.15); lg.connect(o.frequency); o.connect(f); o.start(t); o.stop(t+1.3); });
+      l.start(t); l.stop(t+1.3);
+    }
   };
 })();
 
 /* ---------------- het rad ---------------- */
 const schijf=$('#schijf'), wijzer=$('#wijzer');
-const uitverkochtVak=s=>(s.k==='stroop'&&st.S<=0)||(s.k==='mega'&&st.P<=0)||(s.k==='optreden'&&(st.optGeweest||!st.optAan));
+const uitverkochtVak=s=>(s.k==='milka'&&st.S<=0)||(s.k==='optreden'&&(st.optGeweest||!st.optAan));
 function rondRect(x,a,b,w,h,r){ x.beginPath(); x.moveTo(a+r,b); x.arcTo(a+w,b,a+w,b+h,r); x.arcTo(a+w,b+h,a,b+h,r); x.arcTo(a,b+h,a,b,r); x.arcTo(a,b,a+w,b,r); x.closePath(); }
 function label(x,lijnen,r,font,kleur){
   const eind=r*.895, lengte=r*.52, twee=lijnen.length>1;
@@ -576,8 +594,10 @@ function tekenWiel(){
   SEG.forEach((s,i)=>{
     const a0=-Math.PI/2+i*a;
     x.beginPath(); x.moveTo(0,0); x.arc(0,0,r,a0,a0+a); x.closePath();
-    if(s.k==='mega'){ const g=x.createRadialGradient(0,0,r*.2,0,0,r); g.addColorStop(0,'#FFEFB8'); g.addColorStop(.6,'#F2C14E'); g.addColorStop(1,'#B5841C'); x.fillStyle=g; } else x.fillStyle=s.c;
-    x.fill();
+    x.fillStyle=s.c; x.fill();
+    if(s.k==='milka'){ x.save(); x.clip(); x.fillStyle='rgba(255,255,255,.92)';
+      [[.42,.5,.075],[.66,.14,.05],[.8,.86,.058],[.96,.38,.045]].forEach(([rr,t,sz])=>{ const an=a0+a*t; x.beginPath(); x.ellipse(Math.cos(an)*r*rr,Math.sin(an)*r*rr,r*sz*1.35,r*sz,an+.7,0,Math.PI*2); x.fill(); });
+      x.restore(); }
   });
   const sh=x.createRadialGradient(0,0,r*.22,0,0,r);
   sh.addColorStop(0,'rgba(255,255,255,.12)'); sh.addColorStop(.55,'rgba(255,255,255,0)'); sh.addColorStop(1,'rgba(0,0,0,.38)');
@@ -622,20 +642,25 @@ function lus(t){
   requestAnimationFrame(lus);
 }
 
-/* kansen: de voorraad wordt verdeeld over de verwachte draaiers */
+/* kansen: de repen worden verdeeld over de verwachte draaiers, zodat ze aan het eind op zijn.
+   Hoe langer geen Milka, hoe groter de kans; na 2 nieten op rij valt er altijd iets. */
 function gewichten(){
   const gedaan=st.beurten.filter(b=>!b.bonus).length, rest=Math.max(1,st.verwacht-gedaan);
-  const W0=Object.values(BASIS).reduce((a,b)=>a+b,0)+2*BASIS.stroop;
-  const fs=st.S>0?klem((st.S/rest)/(3*BASIS.stroop/W0),.35,1.8):1;
-  const fp=st.P>0?klem((st.P/rest)/(BASIS.mega/W0),.3,2.5):1;
-  return SEG.map(s=>{
-    let w=BASIS[s.k];
-    if(s.k==='stroop'&&st.S>0) w*=fs*(st.allesWeg?3:1);
-    if(s.k==='mega'&&st.P>0) w*=fp*(st.allesWeg?2:1);
-    if(s.k==='optreden'&&(!st.optAan||st.optGeweest)) w=0;
-    if(st.allesWeg&&NIETEN.includes(s.k)) w*=.5;
-    return w;
+  const laatste=st.beurten.slice(-2), nietenOpRij=laatste.length===2&&laatste.every(b=>NIETEN.includes(b.k));
+  let droog=0; for(let i=st.beurten.length-1;i>=0&&st.beurten[i].k!=='milka';i--) droog++;
+  const w=SEG.map(s=>{
+    if(s.k==='milka') return 0;
+    let x=BASIS[s.k];
+    if(s.k==='optreden'&&(!st.optAan||st.optGeweest)) x=0;
+    if(NIETEN.includes(s.k)) x*=nietenOpRij?0:(st.allesWeg?.5:1);
+    return x;
   });
+  const vakken=SEG.filter(s=>s.k==='milka').length;
+  if(st.S<=0) return SEG.map((s,i)=>s.k==='milka'?(nietenOpRij?0:.5):w[i]);
+  let p=st.allesWeg?.85:Math.min(.85,st.S/rest);
+  p=Math.min(.9,p*(1+.2*Math.max(0,droog-3)));
+  const M=p*w.reduce((a,b)=>a+b,0)/(1-p);
+  return SEG.map((s,i)=>s.k==='milka'?M/vakken:w[i]);
 }
 function kies(){ const w=gewichten(), tot=w.reduce((a,b)=>a+b,0); let r=Math.random()*tot; for(let i=0;i<w.length;i++){ r-=w[i]; if(r<=0) return i; } return w.length-1; }
 
@@ -654,10 +679,9 @@ function draai(){
 }
 function geland(i){
   let k=SEG[i].k, op=null;
-  if(k==='stroop'&&st.S<=0){ k='uitverkocht'; op='stroopwafels'; }
-  else if(k==='mega'&&st.P<=0){ k='uitverkocht'; op='pakken'; }
+  if(k==='milka'&&st.S<=0){ k='uitverkocht'; op='milka'; }
   else if(k==='optreden'&&st.optGeweest){ k='uitverkocht'; op='optreden'; }
-  if(k==='stroop') st.S--; else if(k==='mega') st.P--; else if(k==='optreden') st.optGeweest=true;
+  if(k==='milka') st.S--; else if(k==='optreden') st.optGeweest=true;
   st.bon++;
   const b={naam:klant.naam,team:klant.team,k,op,bonus:!!klant.bonus,t:Date.now(),bon:st.bon};
   st.beurten.push(b); bewaar(); tekenWiel(); ui(); toonUitslag(b);
@@ -670,7 +694,7 @@ const BUSJE='<div class="baan"><svg class="busje" viewBox="0 0 300 140" aria-hid
 
 function defVoor(b){
   if(b.k==='uitverkocht'&&b.op){
-    const w={stroopwafels:['1x Stroopwafel','De losse stroopwafels zijn op.'],pakken:['1x Pak stroopwafels','De hele pakken zijn op.'],optreden:['1x Optreden van de host','De host heeft al opgetreden.']}[b.op];
+    const w={milka:['1x Reep Milka','De Milka is op.'],optreden:['1x Optreden van de host','De host heeft al opgetreden.']}[b.op]||['1x Je droomdeal','Deze deal is op.'];
     return Object.assign({},UIT.uitverkocht,{regels:[[w[0],'op']],doe:w[1]+' Helaas, geen prijs.'});
   }
   return UIT[b.k];
@@ -692,7 +716,7 @@ function toonUitslag(b){
    <div class="links">
     <div class="kop kopregel in${def.kop.length>14?' lang':''}">${def.kop}</div>
     <p class="instructie in" style="animation-delay:140ms">${def.doe}</p>
-    ${def.omroep?`<div class="omroep in" style="animation-delay:1.9s"><small>Omroepbericht voor de microfoon</small>Ding-dong! Een mega deal voor ${esc(b.naam)}${t.id==='gast'?'':' van '+esc(t.naam)}. Applaus graag!</div>`:''}
+    ${def.omroep?`<div class="omroep in" style="animation-delay:1.9s"><small>Omroepbericht voor de microfoon</small>Ding-dong! Een reep Milka voor ${esc(b.naam)}${t.id==='gast'?'':' van '+esc(t.naam)}. Applaus graag!</div>`:''}
     <div class="effect"></div>
    </div>
    <div id="printer"></div>
@@ -707,8 +731,7 @@ function toonUitslag(b){
 function effect(b,def,el){
   const box=el.querySelector('.effect');
   switch(b.k){
-    case 'stroop': geluid.kassa(); regen('wafels'); lampen('flits',2400); break;
-    case 'mega': geluid.fanfare(); regen('confetti'); setTimeout(()=>regen('wafels'),450); setTimeout(()=>geluid.kassa(),800); setTimeout(()=>geluid.dingdong(),1900); lampen('flits',4200); break;
+    case 'milka': box.innerHTML=`<div class="koewin">${KOE}<span class="boe">Boe!</span></div>`; geluid.kassa(); setTimeout(()=>geluid.boe(),380); regen('confetti'); setTimeout(()=>regen('repen'),250); setTimeout(()=>geluid.dingdong(),1900); lampen('flits',3000); break;
     case 'bonus': box.innerHTML=`<div class="sticker" style="clip-path:${STER}">1+1<br>gratis</div>`; setTimeout(()=>{ box.firstChild.classList.add('klap'); geluid.klets(); },200); setTimeout(()=>geluid.dingdong(),600); lampen('flits',1600); break;
     case 'drank': box.innerHTML=GLAS; geluid.schenk(); setTimeout(()=>geluid.proost(),1750); break;
     case 'compliment': box.innerHTML='<div class="bonkaart"><b>Complimentbon</b><span>Lever deze bon in aan de bar voor één gratis compliment.</span><small>Geen retour mogelijk</small></div>'; geluid.dingdong(); lampen('flits',1600); break;
@@ -740,19 +763,20 @@ function naUitslag(auto){
   ui();
 }
 
-/* deeltjes: stroopwafelregen en confetti */
+/* deeltjes: chocoladeregen en confetti */
 const fx=$('#fx'), fctx=fx.getContext('2d'); let deeltjes=[], fxLoopt=false, fxVorige=0;
 function maatFx(){ const d=Math.min(2,window.devicePixelRatio||1); fx.width=innerWidth*d; fx.height=innerHeight*d; fctx.setTransform(d,0,0,d,0,0); }
-const wafel=(()=>{ const c=document.createElement('canvas'); c.width=c.height=128; const x=c.getContext('2d');
-  const g=x.createRadialGradient(54,50,10,64,64,62); g.addColorStop(0,'#EBB868'); g.addColorStop(.7,'#C98A3C'); g.addColorStop(1,'#8E5A22');
-  x.fillStyle=g; x.beginPath(); x.arc(64,64,60,0,Math.PI*2); x.fill();
-  x.save(); x.beginPath(); x.arc(64,64,52,0,Math.PI*2); x.clip(); x.strokeStyle='rgba(110,64,20,.55)'; x.lineWidth=4;
-  for(let i=-128;i<256;i+=16){ x.beginPath(); x.moveTo(i,0); x.lineTo(i+128,128); x.stroke(); x.beginPath(); x.moveTo(i+128,0); x.lineTo(i,128); x.stroke(); }
-  x.restore(); x.strokeStyle='rgba(90,50,15,.7)'; x.lineWidth=3; x.beginPath(); x.arc(64,64,58,0,Math.PI*2); x.stroke(); return c; })();
+const reep=(()=>{ const c=document.createElement('canvas'); c.width=160; c.height=80; const x=c.getContext('2d');
+  x.fillStyle='#5A3519'; rondRect(x,4,10,64,60,8); x.fill();
+  x.strokeStyle='rgba(0,0,0,.28)'; x.lineWidth=3; [24,44].forEach(v=>{ x.beginPath(); x.moveTo(v,10); x.lineTo(v,70); x.stroke(); }); x.beginPath(); x.moveTo(4,40); x.lineTo(60,40); x.stroke();
+  const g=x.createLinearGradient(0,6,0,74); g.addColorStop(0,'#AE92DE'); g.addColorStop(1,'#6A4CA2');
+  x.fillStyle=g; rondRect(x,52,6,104,68,8); x.fill();
+  x.fillStyle='rgba(255,255,255,.93)'; x.beginPath(); x.moveTo(52,46); x.bezierCurveTo(84,30,112,60,156,40); x.lineTo(156,53); x.bezierCurveTo(112,72,84,44,52,59); x.closePath(); x.fill();
+  return c; })();
 function regen(soort){
   const W=innerWidth,H=innerHeight;
-  if(soort==='wafels') for(let i=0;i<38;i++) deeltjes.push({s:'w',x:Math.random()*W,y:-70-Math.random()*H*.7,vx:(Math.random()-.5)*.08,vy:.25+Math.random()*.25,r:Math.random()*6,vr:(Math.random()-.5)*.004,m:28+Math.random()*34});
-  if(soort==='confetti') for(let i=0;i<180;i++){ const a=Math.random()*Math.PI*2, v=.4+Math.random()*1.1; deeltjes.push({s:'c',x:W*.27,y:H*.3,vx:Math.cos(a)*v,vy:Math.sin(a)*v-.6,r:Math.random()*6,vr:(Math.random()-.5)*.02,m:7+Math.random()*8,k:['#F2C14E','#FFE7A3','#FF6600','#0090E3','#ffffff'][i%5],f:Math.random()*6}); }
+  if(soort==='repen') for(let i=0;i<38;i++) deeltjes.push({s:'w',x:Math.random()*W,y:-70-Math.random()*H*.7,vx:(Math.random()-.5)*.08,vy:.25+Math.random()*.25,r:Math.random()*6,vr:(Math.random()-.5)*.004,m:28+Math.random()*34});
+  if(soort==='confetti') for(let i=0;i<180;i++){ const a=Math.random()*Math.PI*2, v=.4+Math.random()*1.1; deeltjes.push({s:'c',x:W*.27,y:H*.3,vx:Math.cos(a)*v,vy:Math.sin(a)*v-.6,r:Math.random()*6,vr:(Math.random()-.5)*.02,m:7+Math.random()*8,k:['#B79BE6','#8C6CC2','#ffffff','#F2C14E','#E4D7F7'][i%5],f:Math.random()*6}); }
   if(!fxLoopt){ fxLoopt=true; requestAnimationFrame(fxStap); }
 }
 function fxStap(t){
@@ -762,7 +786,7 @@ function fxStap(t){
     d.vy+=(d.s==='c'?.0016:.0009)*dt; d.x+=d.vx*dt; d.y+=d.vy*dt; d.r+=d.vr*dt;
     fctx.save(); fctx.translate(d.x,d.y); fctx.rotate(d.r);
     if(d.s==='c'){ d.vx*=.992; d.f+=dt*.012; fctx.scale(1,Math.cos(d.f)); fctx.fillStyle=d.k; fctx.fillRect(-d.m/2,-d.m/4,d.m,d.m/2); }
-    else fctx.drawImage(wafel,-d.m,-d.m,d.m*2,d.m*2);
+    else fctx.drawImage(reep,-d.m,-d.m/2,d.m*2,d.m);
     fctx.restore();
   }
   deeltjes=deeltjes.filter(d=>d.y<innerHeight+120);
@@ -803,9 +827,9 @@ function naarKlaar(){
 /* ---------------- scherm bijwerken ---------------- */
 function geleden(t){ const m=Math.round((Date.now()-t)/60000); return m<1?'net nu':m===1?'1 minuut geleden':m<60?`${m} minuten geleden`:'een tijdje terug'; }
 function ui(){
-  const S=st.S, P=st.P, pak=n=>n===1?'pak':'pakken', v=$('#voorraad');
-  v.className=S<=0?'op':(S<15?'bijna':'');
-  v.querySelector('span').textContent=S>0?`${S<15?'Bijna op':'Op voorraad'}: ${S} stroopwafels en ${P} ${pak(P)}`:(P>0?`Losse stroopwafels op, nog ${P} ${pak(P)}`:'Alles is op. Op = op.');
+  const S=st.S, v=$('#voorraad');
+  v.className=S<=0?'op':(S<6?'bijna':'');
+  v.querySelector('span').textContent=S>0?`${S<6?'Bijna op':'Op voorraad'}: nog ${S} ${S===1?'reep':'repen'} Milka`:'De Milka is op. Op = op.';
   const k=$('#klant'), knop=$('#knop');
   if(klant&&(fase==='klaar'||fase==='draait'||fase==='intro')){ const t=team(klant.team); k.innerHTML=`Klant: <b>${esc(klant.naam)}</b>, ${esc(t.id==='gast'?'geen team':t.kort)}${klant.bonus?' (extra draai)':''}`; }
   else k.textContent='Lever je voucher in bij de host.';
@@ -834,7 +858,7 @@ function openInstellingen(welkom){
   $('#instellingen').classList.add('open');
 }
 function vulInstellingen(){
-  $('#iS').value=st.S; $('#iP').value=st.P; $('#iVerwacht').value=st.verwacht;
+  $('#iS').value=st.S; $('#iVerwacht').value=st.verwacht;
   $('#iOpt').checked=st.optAan; $('#iAlles').checked=st.allesWeg; $('#iGeluid').checked=st.geluid;
   $('#iOptTekst').textContent=(st.optGeweest?'Is al gebeurd, dus nu uitverkocht.':'Nog niet gebeurd.')+' Kans ongeveer 1 op 700 per draai, hooguit één keer.';
   if(!$('#pDraai').value) $('#pDraai').value=Math.ceil(st.verwacht/10)*10;
@@ -842,15 +866,15 @@ function vulInstellingen(){
 }
 function leesInstellingen(){
   const getal=(id,min)=>Math.max(min,parseInt($(id).value,10)||0);
-  st.S=getal('#iS',0); st.P=getal('#iP',0); st.verwacht=getal('#iVerwacht',1);
+  st.S=getal('#iS',0); st.verwacht=getal('#iVerwacht',1);
   st.optAan=$('#iOpt').checked; st.allesWeg=$('#iAlles').checked; st.geluid=$('#iGeluid').checked;
   geluid.volume(st.geluid); bewaar(); tekenWiel(); ui();
 }
 const melding=t=>{ $('#melding').textContent=t; };
-$('#instellingen').addEventListener('input',e=>{ if(e.target.matches('#iS,#iP,#iVerwacht,#iOpt,#iAlles,#iGeluid')) leesInstellingen(); });
+$('#instellingen').addEventListener('input',e=>{ if(e.target.matches('#iS,#iVerwacht,#iOpt,#iAlles,#iGeluid')) leesInstellingen(); });
 $('#instellingen').addEventListener('click',e=>{ const s=e.target.closest('[data-veld]'); if(!s) return; const inp=$('#'+s.dataset.veld); inp.value=Math.max(0,(parseInt(inp.value,10)||0)+Number(s.dataset.d)); if(inp.id.startsWith('i')) leesInstellingen(); });
 $('#bSluit').addEventListener('click',()=>{ leesInstellingen(); geluid.start(); $('#instellingen').classList.remove('open'); if(!st.klaar){ st.klaar=true; bewaar(); } if(fase==='start') fase='rust'; wakker(); ui(); });
-$('#bTerug').addEventListener('click',()=>{ const b=st.beurten.pop(); if(!b){ melding('Er is nog geen beurt om terug te draaien.'); return; } if(b.k==='stroop') st.S++; else if(b.k==='mega') st.P++; else if(b.k==='optreden') st.optGeweest=false; bewaar(); vulInstellingen(); tekenWiel(); ui(); melding(`Teruggedraaid: ${b.naam}, ${UIT[b.k].kop.toLowerCase()}`); });
+$('#bTerug').addEventListener('click',()=>{ const b=st.beurten.pop(); if(!b){ melding('Er is nog geen beurt om terug te draaien.'); return; } if(b.k==='milka') st.S++; else if(b.k==='optreden') st.optGeweest=false; bewaar(); vulInstellingen(); tekenWiel(); ui(); melding(`Teruggedraaid: ${b.naam}, ${UIT[b.k].kop.toLowerCase()}`); });
 $('#bScherm').addEventListener('click',volledigScherm);
 $('#bWis').addEventListener('click',()=>{ if(!confirm('Alles wissen? De voorraad, de teamstand en alle beurten gaan weg.')) return; st=vers(); bewaar(); vulInstellingen(); tekenWiel(); ui(); melding('Alles is gewist. Vul de voorraad opnieuw in.'); });
 $('#bPrint').addEventListener('click',printen);
@@ -892,12 +916,12 @@ addEventListener('keydown',e=>{
   if(k==='s'){ if(fase==='rust'||fase==='klaar') openInstellingen(false); return; }
   if(k==='m'){ st.geluid=!st.geluid; geluid.volume(st.geluid); bewaar(); return; }
   if(k==='f'){ volledigScherm(); return; }
-  if(fase==='klaar'&&(k==='j'||k==='o')){ gedwongen=k==='j'?'mega':'optreden'; $('#geheim').classList.add('aan'); }
+  if(fase==='klaar'&&(k==='j'||k==='o')){ gedwongen=k==='j'?'milka':'optreden'; $('#geheim').classList.add('aan'); }
 });
 let rt=0; addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>{ tekenWiel(); maatFx(); },120); });
 
 /* ---------------- start ---------------- */
-maatFx(); tekenWiel(); ui(); requestAnimationFrame(lus);
+$('#koekop').innerHTML=KOE; maatFx(); tekenWiel(); ui(); requestAnimationFrame(lus);
 if(document.fonts){ document.fonts.ready.then(tekenWiel); document.fonts.addEventListener?.('loadingdone',tekenWiel); }
 if(fase==='start') openInstellingen(true);
 </script>
